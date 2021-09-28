@@ -193,7 +193,7 @@ class MyDataModule(pl.LightningDataModule):
         return DataLoader(self.valid_dset, batch_size=self.batch_size, shuffle=False, num_workers=6) 
 
 def cli_main():
-    # logger = WandbLogger(name=f'CNN_eff0_fold{C_FOLD}', project='sp_recog')
+    logger = WandbLogger(name=f'CNN_eff0_fold{C_FOLD}', project='sp_recog')
     classifier =  LitClassifier()
     mc = ModelCheckpoint('model', monitor='val_acc', mode='max', filename='{epoch}-{val_acc:.4f}_' + f'fold_{C_FOLD}')
     # swa = StochasticWeightAveraging(swa_epoch_start=2, annealing_epochs=2)
@@ -203,9 +203,9 @@ def cli_main():
         # accelerator='ddp_spawn',
         # stochastic_weight_avg=True,
         callbacks=[mc],
-        # logger=logger
+        logger=logger
         )
-    mydatamodule = MyDataModule(TRAIN_DF, VALID_DF) # ,  TRAIN_IMAGES, VALID_IMAGES  TRAIN_FEAT_DF, VALID_FEAT_DF, , TRAIN_IMAGES, VALID_IMAGES
+    mydatamodule = MyDataModule(TRAIN_DF, VALID_DF)
     trainer.fit(classifier, datamodule=mydatamodule)
 
 if __name__ == '__main__':
